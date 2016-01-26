@@ -1,0 +1,5 @@
+URL:        https://github.com/wingify/please.js/tree/master
+Version:    master at date 30.11.2015 
+Author:     Wingify Software Pvt. Ltd.
+License:    MIT
+            https://github.com/wingify/please.js/blob/master/LICENSE-MIT

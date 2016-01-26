@@ -1,0 +1,5 @@
+URL:        http://jquery.com/download/
+Version:    1.10.2
+Author:     jQuery Foundation, Inc. and other contributors
+License:    MIT license           
+            http://jquery.org/license

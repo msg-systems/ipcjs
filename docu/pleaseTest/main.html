@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>msg Insurance Suite - Main</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="shortcut icon" href="favicon.ico"/>
+    <script src="../lib/jquery/jquery.js" type="text/javascript"></script>
+    <script src="../lib/please/please.js" type="text/javascript"></script>
+    <style>
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        .in {
+            width: 100%;
+            height: 50%;
+            background: lightgrey;
+            padding: 5px;
+        }
+        .in textarea {  width: calc(100% - 15px); height: calc(100% - 10px); }
+        .frame {
+            width: 100%;
+            height: 50%;
+            background: lightyellow;
+        }
+    </style>
+</head>
+<body>
+<div class="in">
+    <textarea></textarea>
+</div>
+<iframe class="frame" src="frame.html" >
+</iframe>
+
+    <script type="text/javascript">
+        please.init(window);
+
+        var frame = $(".frame");
+        var textarea = $(".in textarea");
+        textarea.on("keydown", function(ev) {
+        console.log(frame[0].contentWindow, ev)
+            please(frame[0].contentWindow).call("textIn", ev.which)
+        })
+
+        function textIn(txt) {
+            textarea.val(textarea.val() + txt)
+        }
+    </script>
+
+</body>
+</html>
