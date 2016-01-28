@@ -7,10 +7,10 @@ module.exports = function (grunt) {
                 jshintrc: ".jshintrc"
             },
             gruntfile: ["Gruntfile.js"],
-            src: ["src/interface-gen.js"]
+            src: ["src/ipc-gen.js"]
         },
         babel: {
-            cominterface: {
+            "msg-js-ipc": {
                 options: {
                     sourceMap: true,
                     "plugins": [
@@ -47,8 +47,8 @@ module.exports = function (grunt) {
             }
         },
         execute: {
-           cominterface: {
-                src: ["tmp/interface-gen.js"]
+            "msg-js-ipc": {
+                src: ["tmp/ipc-gen.js"]
             }
         }
     })

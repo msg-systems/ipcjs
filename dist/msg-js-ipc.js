@@ -1,10 +1,10 @@
-var COM_INTERFACE = (function () {
-    var _comInterface = {};
+var JS_IPC = function () {
+    var _ipc = {};
     var _this = {};
 
     /*  private copy of jQuery  */
-    var _JQuery = _comInterface.$ = (function () {
-        var jQuery = (function () {
+    var _JQuery = _ipc.$ = function () {
+        var jQuery = function () {
             var module = {};
             //it is important to have the ; here because otherwise it will result in an error
             module.exports = {};
@@ -10361,12 +10361,12 @@ return jQuery;
 }));
 ;
             return module.exports;
-        })();
+        }();
         return jQuery;
-    })();
+    }();
 
     /*  private copy of Please  */
-    var _Please = (function () {
+    var _Please = function () {
         (window.__pleaseClosure = function ($, window) {
 	'use strict';
 	var console = window.console; // jshint unused: false
@@ -11117,55 +11117,45 @@ window.please = please;
 })(jQuery, window);;
 
         return window.please;
-    })(_JQuery);
+    }(_JQuery);
 
     _Please.init(window);
 
-    var methodsFromInnerToOuter = [{ method: "contentReady" },
-    // generische Methode, die mit der gerade geöffneten App kommuniziert. (man kann z.B. google-Maps eine Adresse setzen)
-    // und die Daten aus der inneren App dem Rahmen übergibt
-    { method: "contentDataToApp" }, { method: "registerApps" },
-    // die innere Anwendung kann eine bestimme App aktivieren
-    { method: "activateApp" }, { method: "infoText" }];
-
-    var methodsFromOuterToInner = [
-    // die aktuellen Benutzereinstellungen der Rahmenanwendung werden der inneren Anwendung übergeben
-    { method: "userSettings" },
-    // hier können Daten aus einer App der inneren Anwendung übergeben werden, z.B. wenn etwas in Google-Maps angeklickt wurde
-    { method: "appDataToContent" }];
-
     _this.registeredImplementation = null;
 
-    _comInterface.registerImplementation = function (implementation) {
-        //TODO evtl. AST abfrage und check ob richitg viele parameter definiert wurden bei jeder function
-        _.forEach(methodsFromOuterToInner, function (methodObj) {
-            if (typeof implementation[methodObj.method] !== 'function' && methodObj.mandatory) throw new Error("The function \"" + methodObj.method + "\" is not defined, but is a mandatory function for the implementation of the cominterface");
-        });
-
+    _ipc.registerImplementation = function (implementation) {
         _this.registeredImplementation = implementation;
     };
 
     //
     // methods that are called over please from the parent
     //
+    _ipc.publishEventFromOuterToInner = function () {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
 
-    _.forEach(methodsFromOuterToInner, function (methodObj) {
-        _comInterface[methodObj.method] = function () {
-            _this.registeredImplementation[methodObj.method].apply(_this.registeredImplementation, arguments);
-        };
-    });
+        var methodName = args[0];
+        var remainingArguments = Array.prototype.slice.call(args, 1, args.length);
+        try {
+            _this.registeredImplementation[methodName].apply(_this.registeredImplementation, remainingArguments);
+        } catch (e) {
+            throw new Error("The function \"" + methodName + "\" is not defined in the registered Implementation, please implement it, to be able to catch this method from the caller.");
+        }
+    };
 
     //
     // methods that are called from the inner app and that should be mapped in a please - call
     //
+    _ipc.publishEventFromInnerToOuter = function () {
+        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            args[_key2] = arguments[_key2];
+        }
 
-    _.forEach(methodsFromInnerToOuter, function (methodObj) {
-        _comInterface[methodObj.method] = function () {
-            var comArguments = ["app.applicationFramework.comRecipient." + methodObj.method].concat(Array.prototype.slice.call(arguments, 0, arguments.length));
-            return please(parent).call.apply(please(parent), comArguments);
-        };
-    });
+        var comArguments = ["app.applicationFramework.comRecipient." + args[0]].concat(Array.prototype.slice.call(args, 1, args.length));
+        return please(parent).call.apply(please(parent), comArguments);
+    };
 
-    return _comInterface;
-})();
-//# sourceMappingURL=interface-tmpl.js.map
+    return _ipc;
+}();
+//# sourceMappingURL=ipc-tmpl.js.map

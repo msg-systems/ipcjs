@@ -10,5 +10,5 @@ module.exports = function (grunt) {
 
     grunt.loadTasks("buildTasks")
 
-    grunt.registerTask("default", ["clean:clean", "jshint", "babel:cominterface", "execute:cominterface"])
+    grunt.registerTask("default", ["clean:clean", "jshint", "babel:msg-js-ipc", "execute:msg-js-ipc"])
 }
