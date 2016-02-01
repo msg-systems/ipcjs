@@ -11121,14 +11121,15 @@ window.please = please;
 
     _Please.init(window);
 
-    _this.registeredImplementation = null;
+    _this.registeredInnerImplementation = null;
 
-    _ipc.registerImplementation = function (implementation) {
-        _this.registeredImplementation = implementation;
+    // methods that are called from inner
+    _ipc.registerInnerImplementation = function (implementation) {
+        _this.registeredInnerImplementation = implementation;
     };
 
     //
-    // methods that are called over please from the parent
+    // methods that are called over please from the parent ( = from outer)
     //
     _ipc.publishEventFromOuterToInner = function () {
         for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
@@ -11138,9 +11139,9 @@ window.please = please;
         var methodName = args[0];
         var remainingArguments = Array.prototype.slice.call(args, 1, args.length);
         try {
-            _this.registeredImplementation[methodName].apply(_this.registeredImplementation, remainingArguments);
+            _this.registeredInnerImplementation[methodName].apply(_this.registeredInnerImplementation, remainingArguments);
         } catch (e) {
-            throw new Error("The function \"" + methodName + "\" is not defined in the registered Implementation, please implement it, to be able to catch this method from the caller.");
+            throw new Error("The function \"" + methodName + "\" is not defined in the registered Implementation of the recipient of the inner application,\n            please implement it, to be able to catch this method from the outer caller.");
         }
     };
 
@@ -11152,8 +11153,12 @@ window.please = please;
             args[_key2] = arguments[_key2];
         }
 
-        var comArguments = ["app.applicationFramework.comRecipient." + args[0]].concat(Array.prototype.slice.call(args, 1, args.length));
-        return please(parent).call.apply(please(parent), comArguments);
+        var comArguments = ['app.ipcAdapter.recipient.subscribeForInnerEvent'].concat(Array.prototype.slice.call(args, 0, args.length));
+        please(parent).call.apply(please(parent), comArguments).then(function () {// success callback
+        }, function (error) {
+            // failure callback
+            console.error('Error occured while a inner application tried to call a method of the outer application: ', error.stack);
+        });
     };
 
     return _ipc;

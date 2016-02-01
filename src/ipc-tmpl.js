@@ -22,23 +22,24 @@ const JS_IPC = (() => {
 
     _Please.init(window)
 
+    _this.registeredInnerImplementation = null
 
-    _this.registeredImplementation = null
-
-    _ipc.registerImplementation = implementation => {
-        _this.registeredImplementation = implementation
+    // methods that are called from inner
+    _ipc.registerInnerImplementation = implementation => {
+        _this.registeredInnerImplementation = implementation
     }
 
     //
-    // methods that are called over please from the parent
+    // methods that are called over please from the parent ( = from outer)
     //
     _ipc.publishEventFromOuterToInner = (...args) => {
-        let methodName = args[0]
-        let remainingArguments = Array.prototype.slice.call(args, 1, args.length)
+        const methodName = args[0]
+        const remainingArguments = Array.prototype.slice.call(args, 1, args.length)
         try {
-            _this.registeredImplementation[methodName].apply(_this.registeredImplementation, remainingArguments)
+            _this.registeredInnerImplementation[methodName].apply(_this.registeredInnerImplementation, remainingArguments)
         } catch (e) {
-            throw new Error(`The function "${methodName}" is not defined in the registered Implementation, please implement it, to be able to catch this method from the caller.`);
+            throw new Error(`The function "${methodName}" is not defined in the registered Implementation of the recipient of the inner application,
+            please implement it, to be able to catch this method from the outer caller.`);
         }
 
     }
@@ -47,10 +48,15 @@ const JS_IPC = (() => {
     // methods that are called from the inner app and that should be mapped in a please - call
     //
     _ipc.publishEventFromInnerToOuter = (...args) => {
-        //todo methoden die es nicht gibt abfangen
-        let comArguments = [`app.applicationFramework.comRecipient.${args[0]}`].concat(Array.prototype.slice.call(args, 1, args.length))
-        return please(parent).call.apply(please(parent), comArguments)
+        const comArguments = ['app.ipcAdapter.recipient.subscribeForInnerEvent'].concat(Array.prototype.slice.call(args, 0, args.length))
+        please(parent).call.apply(please(parent), comArguments).then(
+            function () { // success callback
+            }, function (error) { // failure callback
+                console.error('Error occured while a inner application tried to call a method of the outer application: ', error.stack);
+            }
+        );
     }
+
 
     return _ipc
 })()
