@@ -1,9 +1,21 @@
-var JS_IPC = function () {
+/*
+ **  IPC - Inter Process Communication
+ **  Design and Development by msg Applied Technology Research
+ **  Copyright (c) 2013 - 2016 msg systems ag (http://www.msg-systems.com/)
+ */
+/*  Universal Module Definition (UMD)  */
+(function (root, factory) {
+    /* global define:false */
+    if (typeof define === "function" && define.amd) define('IPC', function () {
+        return factory(root);
+    });else root.IPC = factory(root);
+})(this, function (root) {
+    /*  create internal and external API  */
+    var ipc = {};
     var _ipc = {};
-    var _this = {};
 
     /*  private copy of jQuery  */
-    var _JQuery = _ipc.$ = function () {
+    var _JQuery = ipc.$ = function () {
         var jQuery = function () {
             var module = {};
             //it is important to have the ; here because otherwise it will result in an error
@@ -11119,48 +11131,55 @@ window.please = please;
         return window.please;
     }(_JQuery);
 
-    _Please.init(window);
+    _Please.init(root);
 
-    _this.registeredInnerImplementation = null;
+    _ipc.registeredRecipient = null;
 
     // methods that are called from inner
-    _ipc.registerInnerImplementation = function (implementation) {
-        _this.registeredInnerImplementation = implementation;
+    ipc.registerRecipient = function (implementation) {
+        _ipc.registeredRecipient = implementation;
     };
 
     //
-    // methods that are called over please from the parent ( = from outer)
+    // method that is called over please, it will be forwarded to the recipient through calling functions of the recipients implementation
     //
-    _ipc.publishEventFromOuterToInner = function () {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
+    ipc.receiveEvent = function (methodName) {
+        for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            args[_key - 1] = arguments[_key];
         }
 
-        var methodName = args[0];
-        var remainingArguments = Array.prototype.slice.call(args, 1, args.length);
-        try {
-            _this.registeredInnerImplementation[methodName].apply(_this.registeredInnerImplementation, remainingArguments);
-        } catch (e) {
-            throw new Error("The function \"" + methodName + "\" is not defined in the registered Implementation of the recipient of the inner application,\n            please implement it, to be able to catch this method from the outer caller.");
+        var match = methodName.match(/^ipc_.*$/);
+        if (match !== null) {
+            try {
+                var _ipc$registeredRecipi;
+
+                (_ipc$registeredRecipi = _ipc.registeredRecipient)[methodName].apply(_ipc$registeredRecipi, args);
+            } catch (e) {
+                throw new Error("The function \"" + methodName + "\" is not defined in the implementation of the recipient, please implement it, to be able to catch this method from the sender.");
+            }
+        } else {
+            throw new Error("The function-call is not allowed. The function-name \"" + methodName + "\" does not start with \"ipc_\". It is only allowed to call functions over the IPC-Library that start with \"ipc_\".");
         }
     };
 
     //
-    // methods that are called from the inner app and that should be mapped in a please - call
+    // methods that are called from a app to send an event to another window
     //
-    _ipc.publishEventFromInnerToOuter = function () {
-        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
+    ipc.sendEvent = function (target) {
+        for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+            args[_key2 - 1] = arguments[_key2];
         }
 
-        var comArguments = ['app.ipcAdapter.recipient.subscribeForInnerEvent'].concat(Array.prototype.slice.call(args, 0, args.length));
-        please(parent).call.apply(please(parent), comArguments).then(function () {// success callback
-        }, function (error) {
-            // failure callback
-            console.error('Error occured while a inner application tried to call a method of the outer application: ', error.stack);
-        });
+        if (target) {
+            please(target).call.apply(please(target), ['IPC.receiveEvent'].concat(args)).then(function () {// success callback
+            }, function (error) {
+                // failure callback
+                console.error('Error occurred while sender tried to call a method of a recipient: ', error.stack);
+            });
+        }
     };
 
-    return _ipc;
-}();
+    /*  export external API  */
+    return ipc;
+});
 //# sourceMappingURL=ipc-tmpl.js.map

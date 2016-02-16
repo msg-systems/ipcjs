@@ -1,9 +1,24 @@
-const JS_IPC = (() => {
+/*
+ **  IPC - Inter Process Communication
+ **  Design and Development by msg Applied Technology Research
+ **  Copyright (c) 2013 - 2016 msg systems ag (http://www.msg-systems.com/)
+ */
+/*  Universal Module Definition (UMD)  */
+((root, factory) => {
+    /* global define:false */
+    if (typeof define === "function" && define.amd)
+        define('IPC', function () {
+            return factory(root);
+        });
+    else
+        root.IPC = factory(root);
+})(this, (root) => {
+    /*  create internal and external API  */
+    const ipc = {}
     const _ipc = {}
-    const _this = {}
 
     /*  private copy of jQuery  */
-    const _JQuery = _ipc.$ = (() => {
+    const _JQuery = ipc.$ = (() => {
         const jQuery = (() => {
             const module = {}
             //it is important to have the ; here because otherwise it will result in an error
@@ -20,45 +35,46 @@ const JS_IPC = (() => {
         return window.please
     })(_JQuery)
 
-    _Please.init(window)
+    _Please.init(root)
 
-    _this.registeredInnerImplementation = null
+    _ipc.registeredRecipient = null
 
     // methods that are called from inner
-    _ipc.registerInnerImplementation = implementation => {
-        _this.registeredInnerImplementation = implementation
+    ipc.registerRecipient = implementation => {
+        _ipc.registeredRecipient = implementation
     }
 
     //
-    // methods that are called over please from the parent ( = from outer)
+    // method that is called over please, it will be forwarded to the recipient through calling functions of the recipients implementation
     //
-    _ipc.publishEventFromOuterToInner = (...args) => {
-        const methodName = args[0]
-        const remainingArguments = Array.prototype.slice.call(args, 1, args.length)
-        try {
-            _this.registeredInnerImplementation[methodName].apply(_this.registeredInnerImplementation, remainingArguments)
-        } catch (e) {
-            throw new Error(`The function "${methodName}" is not defined in the registered Implementation of the recipient of the inner application,
-            please implement it, to be able to catch this method from the outer caller.`);
-        }
-
-    }
-
-    //
-    // methods that are called from the inner app and that should be mapped in a please - call
-    //
-    _ipc.publishEventFromInnerToOuter = (...args) => {
-        const comArguments = ['app.ipcAdapter.recipient.subscribeForInnerEvent'].concat(Array.prototype.slice.call(args, 0, args.length))
-        please(parent).call.apply(please(parent), comArguments).then(
-            function () { // success callback
-            }, function (error) { // failure callback
-                console.error('Error occured while a inner application tried to call a method of the outer application: ', error.stack);
+    ipc.receiveEvent = (methodName, ...args) => {
+        var match = methodName.match(/^ipc_.*$/)
+        if (match !== null) {
+            try {
+                _ipc.registeredRecipient[methodName](...args)
+            } catch (e) {
+                throw new Error(`The function "${methodName}" is not defined in the implementation of the recipient, please implement it, to be able to catch this method from the sender.`);
             }
-        );
+        } else {
+            throw new Error(`The function-call is not allowed. The function-name "${methodName}" does not start with "ipc_". It is only allowed to call functions over the IPC-Library that start with "ipc_".`);
+        }
     }
 
+    //
+    // methods that are called from a app to send an event to another window
+    //
+    ipc.sendEvent = (target, ...args) => {
+        if (target) {
+            please(target).call.apply(please(target), ['IPC.receiveEvent', ...args]).then(
+                function () { // success callback
+                }, function (error) { // failure callback
+                    console.error('Error occurred while sender tried to call a method of a recipient: ', error.stack);
+                }
+            )
+        }
+    }
 
-    return _ipc
-})()
-
+    /*  export external API  */
+    return ipc
+})
 
