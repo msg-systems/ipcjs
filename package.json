@@ -4,10 +4,12 @@
     "homepage": "https://github.com/msg-systems/msg-js-ipc",
     "description": "msg-js-ipc (msg JavaScript Inter Process Communication) handles the communication between two frames on different domains ",
     "keywords": [
+        "inter",
+        "process",
         "communication",
-        "inter process communication",
-        "pleaseJS",
-        "different domains"
+        "pleasejs",
+        "different",
+        "domains"
     ],
     "license": "MIT",
     "author": {
@@ -19,9 +21,11 @@
         "url": "https://github.com/msg-systems/msg-js-ipc.git"
     },
     "bugs": {
-        "url":  "https://github.com/msg-systems/msg-js-ipc/issues"
+        "url": "https://github.com/msg-systems/msg-js-ipc/issues"
     },
-    "dependencies": {
+    "main": "./dist/msg-js-ipc.js",
+    "scripts": {
+        "prepublish": "grunt"
     },
     "devDependencies": {
         "load-grunt-tasks": "~3.3.0",

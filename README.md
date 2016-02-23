@@ -10,7 +10,9 @@ Before start using `msg-js-ipc`, you must make sure that both windows have `msg-
 
 Install with npm
 
-or download from here
+	$ npm install msg-js-ipc
+
+or [download](https://github.com/msg-systems/msg-js-ipc/blob/master/dist/msg-js-ipc.js) source.
 
 ##Usage
 
