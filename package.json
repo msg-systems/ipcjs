@@ -25,7 +25,8 @@
     },
     "main": "./dist/msg-js-ipc.js",
     "scripts": {
-        "prepublish": "grunt"
+        "prepublish": "grunt",
+        "postpublish": "echo REMEMBER: The file ./dist/msg-js-ipc.js was generated. Please remember to push this file to GIT, if it has changed."
     },
     "devDependencies": {
         "load-grunt-tasks": "3.4.0",
