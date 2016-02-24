@@ -1,8 +1,8 @@
 {
     "name": "msg-js-ipc",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "homepage": "https://github.com/msg-systems/msg-js-ipc",
-    "description": "msg-js-ipc (msg JavaScript Inter Process Communication) handles the communication between two frames on different domains ",
+    "description": "msg-js-ipc (msg JavaScript Inter Process Communication) handles the communication between two windows on different domains ",
     "keywords": [
         "inter",
         "process",
