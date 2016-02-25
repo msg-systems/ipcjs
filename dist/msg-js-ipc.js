@@ -10635,7 +10635,7 @@ window.please = please;
 
                 (_ipc$registeredRecipi = _ipc.registeredRecipient)[methodName].apply(_ipc$registeredRecipi, args);
             } catch (e) {
-                throw new Error("The function \"" + methodName + "\" is not defined in the implementation of the recipient, please implement it, to be able to catch this method from the sender.");
+                throw new Error("The function \"" + methodName + "\" is not defined in the implementation of the recipient, please implement it, to be able to catch this method from the sender. \n Error Stack: " + e.stack);
             }
         } else {
             throw new Error("The function-call is not allowed. The function-name \"" + methodName + "\" does not start with \"ipc_\". It is only allowed to call functions over the IPC-Library that start with \"ipc_\".");
@@ -10651,11 +10651,7 @@ window.please = please;
         }
 
         if (target) {
-            please(target).call.apply(please(target), ['IPC.receiveEvent'].concat(args)).then(function () {// success callback
-            }, function (error) {
-                // failure callback
-                console.error('Error occurred while sender tried to call a method of a recipient: ', error.stack);
-            });
+            please(target).call.apply(please(target), ['IPC.receiveEvent'].concat(args));
         }
     };
 
