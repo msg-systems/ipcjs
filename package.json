@@ -1,15 +1,16 @@
 {
-    "name": "msg-js-ipc",
-    "version": "0.1.2",
-    "homepage": "https://github.com/msg-systems/msg-js-ipc",
-    "description": "msg-js-ipc (msg JavaScript Inter Process Communication) handles the communication between two windows on different domains ",
+    "name": "ipcjs",
+    "version": "0.2.0",
+    "homepage": "https://github.com/msg-systems/ipcjs",
+    "description": "ipcjs (msg JavaScript Inter Process Communication) handles the communication between two windows on different domains ",
     "keywords": [
         "inter",
         "process",
         "communication",
         "pleasejs",
         "different",
-        "domains"
+        "domains",
+        "javascript"
     ],
     "license": "MIT",
     "author": {
@@ -18,17 +19,16 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/msg-systems/msg-js-ipc.git"
+        "url": "https://github.com/msg-systems/ipcjs.git"
     },
     "bugs": {
-        "url": "https://github.com/msg-systems/msg-js-ipc/issues"
+        "url": "https://github.com/msg-systems/ipcjs/issues"
     },
-    "main": "./dist/msg-js-ipc.js",
+    "main": "./dist/ipcjs.js",
     "scripts": {
         "prepublish": "grunt",
-        "postpublish": "echo REMEMBER: The file ./dist/msg-js-ipc.js was generated. Please remember to push this file to GIT, if it has changed."
+        "postpublish": "echo REMEMBER: The file ./dist/ipcjs.js was generated. Please remember to push this file to GIT, if it has changed."
     },
-    "deprecated": "msg-js-ipc has been renamed to ipcjs, please install the latest version of ipcjs instead of msg-js-ipc",
     "devDependencies": {
         "load-grunt-tasks": "3.4.0",
         "grunt": "0.4.5",

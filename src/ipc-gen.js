@@ -19,5 +19,5 @@ js = js
         return please
     })
 
-fs.writeFileSync("dist/msg-js-ipc.js", js, "utf8")
+fs.writeFileSync("dist/ipcjs.js", js, "utf8")
 

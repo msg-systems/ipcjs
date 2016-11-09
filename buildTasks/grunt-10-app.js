@@ -10,7 +10,7 @@ module.exports = function (grunt) {
             src: ["src/ipc-gen.js"]
         },
         babel: {
-            "msg-js-ipc": {
+            "ipcjs": {
                 options: {
                     sourceMap: true,
                     "plugins": [
@@ -47,7 +47,7 @@ module.exports = function (grunt) {
             }
         },
         execute: {
-            "msg-js-ipc": {
+            "ipcjs": {
                 src: ["tmp/ipc-gen.js"]
             }
         }

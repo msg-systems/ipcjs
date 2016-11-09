@@ -1,10 +1,10 @@
 /*
- **  msg-js-ipc
+ **  ipcjs
  **  Library for communication between two frames on different domains
  **  Copyright (c) 2013 - 2015 msg systems ag (http://www.msg-systems.com)
  **
  **  Contributors:
- **  see: https://github.com/msg-systems/msg-js-ipc/graphs/contributors
+ **  see: https://github.com/msg-systems/ipcjs/graphs/contributors
  **
  **  Permission is hereby granted, free of charge, to any person obtaining
  **  a copy of this software and associated documentation files (the
@@ -38,5 +38,5 @@ module.exports = function (grunt) {
 
     grunt.loadTasks("buildTasks")
 
-    grunt.registerTask("default", ["clean:clean", "jshint", "babel:msg-js-ipc", "execute:msg-js-ipc"])
+    grunt.registerTask("default", ["clean:clean", "jshint", "babel:ipcjs", "execute:ipcjs"])
 }
